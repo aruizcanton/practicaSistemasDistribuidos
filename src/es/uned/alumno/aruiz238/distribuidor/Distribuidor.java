@@ -44,11 +44,8 @@ public class Distribuidor implements ServicioVenta {
 
     private static int registrarUsuario () {
         try {
-            //Registry registry = LocateRegistry.getRegistry(registryPort);
-            //ServicioAutenticacionInterface servAutenticacion = (ServicioAutenticacionInterface) registry.lookup (ServicioAutenticacionInterface.NOMBRE_SERVICIO_AUTENTICACION);
             final String userName = EntradaDatosPorConsola.lectura ("Nombre de usuario:");
             final String password = EntradaDatosPorConsola.lectura ("Password:");
-            //especUsuario = servAutenticacion.registrarUsuario (userName, password);
             final ManejadorRegistrarUsuario manejadorRegistrarUsuario = new ManejadorRegistrarUsuario();
             especUsuario = manejadorRegistrarUsuario.registarUsuario(userName, password);
             final UsuarioId usuarioId = especUsuario.getUserId ();
@@ -69,13 +66,10 @@ public class Distribuidor implements ServicioVenta {
     }
     private static int iniciarSesion () {
         try {
-            //Registry registry = LocateRegistry.getRegistry(registryPort);
-            //ServicioAutenticacionInterface servAutenticacion = (ServicioAutenticacionInterface) registry.lookup(ServicioAutenticacionInterface.NOMBRE_SERVICIO_AUTENTICACION);
             final String userName = EntradaDatosPorConsola.lectura("Nombre de usuario:");
             final String password = EntradaDatosPorConsola.lectura("Password:");
             System.out.println("El usuario es: #" + userName + "#");
             System.out.println("La password es: #" + password + "#");
-            //especUsuario = servAutenticacion.iniciarSesion(userName, password);
             final ManejadorInicioSesion manejadorInicioSesion = new ManejadorInicioSesion();
             especUsuario = manejadorInicioSesion.IniciarSesion(userName, password);
             final UsuarioId usuarioId = especUsuario.getUserId();
