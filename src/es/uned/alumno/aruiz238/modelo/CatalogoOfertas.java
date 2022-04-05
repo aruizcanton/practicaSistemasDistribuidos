@@ -20,11 +20,11 @@ public class CatalogoOfertas {
     private final ConcurrentHashMap<OfertaId, EspecOferta> especsOfer;
     private final IAdaptadorServMercancias servMercancias;
 
-    public CatalogoOfertas() throws NotBoundException, RemoteException{
+    public CatalogoOfertas() throws NotBoundException, RemoteException {
         servMercancias = FactoriaDeServicios.getInstancia().getAdaptadorServMercancias();
         especsOfer = servMercancias.getOfertas();
     }
-    public CatalogoOfertas(UsuarioId usuarioId) throws NotBoundException, RemoteException{
+    public CatalogoOfertas(UsuarioId usuarioId) throws NotBoundException, RemoteException {
         servMercancias = FactoriaDeServicios.getInstancia().getAdaptadorServMercancias();
         especsOfer = servMercancias.getOfertas(usuarioId);
     }
