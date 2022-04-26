@@ -11,18 +11,20 @@ import es.uned.alumno.aruiz238.excepciones.UserExistBDDException;
 import es.uned.alumno.aruiz238.excepciones.UserNameNotRegistredException;
 import es.uned.alumno.aruiz238.excepciones.UserPassFormatException;
 import es.uned.alumno.aruiz238.modelo.EspecUsuario;
+import es.uned.alumno.aruiz238.modelo.TipoUsuEnum;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class ServicioAutenticacionImpl implements ServicioAutenticacionInterface {
 
     @Override
-    public EspecUsuario registrarUsuario (String userName, String password) throws RemoteException, UserPassFormatException
+    public EspecUsuario registrarUsuario (String userName, String password, TipoUsuEnum tipoUsuario) throws RemoteException, UserPassFormatException
             , NotBoundException, UserExistBDDException {
             final Registry registry = LocateRegistry.getRegistry(IniciarRMI.registryPort);
             ServicioDatosInterface servDatos = (ServicioDatosInterface) registry.lookup (ServicioDatosInterface.NOMBRE_SERVICIO_DATOS);
@@ -30,7 +32,7 @@ public class ServicioAutenticacionImpl implements ServicioAutenticacionInterface
                 final EspecUsuario especUsuarioTmp = servDatos.getUsuBDD(userName);  // Comprobamos que el usuario efectivamente no existe en la BDD
                 if (especUsuarioTmp == null) {
                     // Como no existe lo creamos
-                    final EspecUsuario especUsuario = new EspecUsuario(userName, password);
+                    final EspecUsuario especUsuario = new EspecUsuario(userName, password, tipoUsuario);
                     return servDatos.anyadirUsuBDD(especUsuario);
                 } else {
                     // El usuario ya se encuentra registrado en la BDD
@@ -75,5 +77,12 @@ public class ServicioAutenticacionImpl implements ServicioAutenticacionInterface
         final Registry registry = LocateRegistry.getRegistry(IniciarRMI.registryPort);
         ServicioDatosInterface servDatos = (ServicioDatosInterface) registry.lookup (ServicioDatosInterface.NOMBRE_SERVICIO_DATOS);
         servDatos.removeUsuBDD(especUsuario);
+    }
+
+    @Override
+    public ConcurrentHashMap<String, EspecUsuario> getUsuarios() throws RemoteException, NotBoundException {
+        final Registry registry = LocateRegistry.getRegistry(IniciarRMI.registryPort);
+        ServicioDatosInterface servDatos = (ServicioDatosInterface) registry.lookup (ServicioDatosInterface.NOMBRE_SERVICIO_DATOS);
+        return servDatos.getUsuarios();
     }
 }

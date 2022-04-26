@@ -24,6 +24,7 @@ public interface ServicioDatosInterface extends Remote {
     public EspecUsuario anyadirUsuBDD (EspecUsuario user) throws RemoteException;
     public EspecUsuario getUsuBDD (String userName) throws RemoteException;
     public void removeUsuBDD(EspecUsuario userName) throws RemoteException;
+    public ConcurrentHashMap<String, EspecUsuario> getUsuarios() throws RemoteException;
 
     // Gestión de mercancías
     public ConcurrentHashMap<MercanciaId, EspecMercancia> getMercancias () throws RemoteException;
@@ -32,5 +33,8 @@ public interface ServicioDatosInterface extends Remote {
     public EspecOferta anyadirOfertaBDD (EspecOferta especOferta) throws RemoteException;
     public void removeOfertaBDD (OfertaId ofertaId) throws RemoteException;
     public ConcurrentHashMap<OfertaId, EspecOferta> getOfertasBDD () throws RemoteException;
-    public ConcurrentHashMap<OfertaId, EspecOferta> getOfertasBDD (UsuarioId usuarioId) throws RemoteException;
+    public ConcurrentHashMap<DemandaId, EspecDemanda> getDemandasBDD () throws RemoteException;
+    public ConcurrentHashMap<DemandaId, EspecDemanda> getDemandasBDD (UsuarioId usuarioId) throws RemoteException;
+    public EspecDemanda anyadirDemandaBDD (EspecDemanda especDemanda) throws RemoteException;
+    public void removeDemandaBDD (DemandaId demandaId) throws  RemoteException;
 }

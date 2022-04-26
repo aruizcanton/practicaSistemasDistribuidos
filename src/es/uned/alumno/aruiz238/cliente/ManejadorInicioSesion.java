@@ -4,7 +4,7 @@
   E-mail: aruiz238@alumno.uned.es
  ////////////////////////////////////////
 */
-package es.uned.alumno.aruiz238.distribuidor;
+package es.uned.alumno.aruiz238.cliente;
 
 import es.uned.alumno.aruiz238.excepciones.PasswordIncorrectException;
 import es.uned.alumno.aruiz238.excepciones.UserNameNotRegistredException;
@@ -16,9 +16,9 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 public class ManejadorInicioSesion {
-    public ManejadorInicioSesion () {}
+    public ManejadorInicioSesion() {}
     public EspecUsuario IniciarSesion (String userName, String password) throws UserNameNotRegistredException, NotBoundException, UserPassFormatException, PasswordIncorrectException, RemoteException {
-        final EspecUsuario especUsuario = new EspecUsuario (userName, password, TipoUsuEnum.DISTRIBUIDOR);
+        final EspecUsuario especUsuario = new EspecUsuario (userName, password, TipoUsuEnum.CLIENTE);
         especUsuario.iniciarSesion();
         return especUsuario;
     }

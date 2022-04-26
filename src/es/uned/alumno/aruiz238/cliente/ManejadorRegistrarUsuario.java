@@ -4,7 +4,7 @@
   E-mail: aruiz238@alumno.uned.es
  ////////////////////////////////////////
 */
-package es.uned.alumno.aruiz238.distribuidor;
+package es.uned.alumno.aruiz238.cliente;
 
 import es.uned.alumno.aruiz238.excepciones.UserExistBDDException;
 import es.uned.alumno.aruiz238.excepciones.UserPassFormatException;
@@ -17,7 +17,7 @@ import java.rmi.RemoteException;
 public class ManejadorRegistrarUsuario {
     public ManejadorRegistrarUsuario() {}
     public EspecUsuario registarUsuario (String userName, String password) throws NotBoundException, UserPassFormatException, RemoteException, UserExistBDDException {
-        final EspecUsuario especUsuario = new EspecUsuario (userName, password, TipoUsuEnum.DISTRIBUIDOR);
+        final EspecUsuario especUsuario = new EspecUsuario (userName, password, TipoUsuEnum.CLIENTE);
         especUsuario.registrarse();
         return especUsuario;
     }

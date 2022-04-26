@@ -13,15 +13,18 @@ public class EspecDemanda implements Serializable {
     private DemandaId demandaId;
     private EspecMercancia especMercancia;
     private UsuarioId usuarioId;    // Cliente que ha introducido la demanda
+    private DemandaListener demandaListener;
 
-    public EspecDemanda (EspecMercancia especMercancia, UsuarioId usuarioId) {
+    public EspecDemanda (EspecMercancia especMercancia, UsuarioId usuarioId, DemandaListener demandaListener) {
         this.especMercancia = especMercancia;
         this.usuarioId = usuarioId;
+        this.demandaListener = demandaListener;
     }
-    public EspecDemanda (DemandaId demandaId, EspecMercancia especMercancia, UsuarioId usuarioId) {
+    public EspecDemanda (DemandaId demandaId, EspecMercancia especMercancia, UsuarioId usuarioId, DemandaListener demandaListener) {
         this.demandaId = demandaId;
         this.especMercancia = especMercancia;
         this.usuarioId = usuarioId;
+        this.demandaListener = demandaListener;
     }
 
     public void setEspecMercancia(EspecMercancia especMercancia) {
@@ -46,5 +49,13 @@ public class EspecDemanda implements Serializable {
 
     public UsuarioId getUsuarioId() {
         return usuarioId;
+    }
+
+    public DemandaListener getDemandaListener() {
+        return demandaListener;
+    }
+
+    public void setDemandaListener(DemandaListener demandaListener) {
+        this.demandaListener = demandaListener;
     }
 }

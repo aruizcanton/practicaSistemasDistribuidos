@@ -18,17 +18,15 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static es.uned.alumno.aruiz238.comm.IniciarRMI.registryHost;
 import static es.uned.alumno.aruiz238.comm.IniciarRMI.registryPort;
 
-public class Distribuidor implements ServicioVenta {
+public class Distribuidor implements ServicioCompraInterface {
     // Servicio de venta
-    public static final String NOMBRE_SERVICIO_VENTAS = "rmi://" + registryHost + ":" + registryPort + "/servicioventas/";
     private static final List<EspecOferta> ofertasVendidas = new ArrayList<>();
-    // Variable de instancia
+    // Variables de instancia
     private static final String[] opcionesMenuPrincipal = {"Registrar un nuevo usuario.", "Autenticarse en el sistema (hacer login).", "Salir."};
     private static final int numOpsMenuPrincipal = 3;
-    private static final String[] opcionesMenuSecundario = {"Introducir oferta.", "Quitar oferta.", "Mostrar ventas.", "Darse de baja en el sistema.", "Salir."};
+    private static final String[] opcionesMenuSecundario = {"Introducir oferta.", "Quitar oferta.", "Mostrar ventas.", "Darse de baja en el sistema.", "Ir al menú anterior."};
     private static final int numOpsMenuSecundario = 5;
     private static EspecUsuario especUsuario;
 
@@ -37,11 +35,10 @@ public class Distribuidor implements ServicioVenta {
     }
 
     @Override
-    public boolean comprarMercancia(EspecOferta especOferta) throws RemoteException {
+    public boolean comprarOferta(EspecOferta especOferta) throws RemoteException {
         ofertasVendidas.add(especOferta);
         return true;
     }
-
     private static int registrarUsuario () {
         try {
             final String userName = EntradaDatosPorConsola.lectura ("Nombre de usuario:");
@@ -98,16 +95,16 @@ public class Distribuidor implements ServicioVenta {
         try {
             //Inicialización
             final CatalogoMercancias ctlgoMer = new CatalogoMercancias();
-            final CatalogoOfertas ctlgoOfer = new CatalogoOfertas();
+            final CatalogoOfertas ctlgoOfer = new CatalogoOfertas(especUsuario.getUserId());
             // Fin de la inicilización
-            final ManejadorIntroducirOferta mndor = new ManejadorIntroducirOferta (ctlgoMer, ctlgoOfer, especUsuario.getUserId());
+            final ManejadorIntroducirOferta mndor = new ManejadorIntroducirOferta (ctlgoMer, ctlgoOfer);
 
             final List<EspecMercancia> especMercancias = mndor.introducirOferta();
             adaptadorInterfazGrafica.escribeEnPantallaEspecMercanciaList(especMercancias);
             final String tipoMercanciaOfer = EntradaDatosPorConsola.lectura ("Introduzca el tipo de mercancía ofertada: ");
             final String precioMercanciaOfer = EntradaDatosPorConsola.lectura ("Introduzca el precio de la oferta:");
             final String kilosMercanciaOfer = EntradaDatosPorConsola.lectura ("Introduzca los kilos de la oferta: ");
-            final EspecOferta especOferta = mndor.altaOferta (new MercanciaId(Integer.parseInt(tipoMercanciaOfer)),Float.parseFloat(precioMercanciaOfer), Float.parseFloat(kilosMercanciaOfer));
+            final EspecOferta especOferta = mndor.altaOferta (new MercanciaId(Integer.parseInt(tipoMercanciaOfer)),Float.parseFloat(precioMercanciaOfer), Float.parseFloat(kilosMercanciaOfer), especUsuario.getUserId());
             adaptadorInterfazGrafica.salidaPorPantallaLn("Se ha introducido satisfactoriamente la oferta con Id: " + especOferta.getOfertaId().getOfertaId());
             adaptadorInterfazGrafica.salidaPorPantallaLn("Los kilos de la oferta son: " + especOferta.getKilos());
             adaptadorInterfazGrafica.salidaPorPantallaLn("El precio de la oferta es: " + especOferta.getPrecio());
@@ -124,7 +121,7 @@ public class Distribuidor implements ServicioVenta {
     private static void quitarOferta () {
         final  IAdaptadorInterfazGrafica adaptadorInterfazGrafica = FactoriaInterfazGrafica.getInstancia().getAdaptadorInterfazGrafica();
         try {
-            final CatalogoOfertas ctlgoOfer = new CatalogoOfertas();
+            final CatalogoOfertas ctlgoOfer = new CatalogoOfertas(especUsuario.getUserId());
             //final List<EspecOferta> especOfertas = ctlgoOfer.getOfertas();
             //if (!especOfertas.isEmpty()) {
                 //adaptadorInterfazGrafica.escribeEnPantallaEspecOfertaList(especOfertas);
@@ -148,14 +145,19 @@ public class Distribuidor implements ServicioVenta {
     private static void mostrarVentas () {
         final  IAdaptadorInterfazGrafica adaptadorInterfazGrafica = FactoriaInterfazGrafica.getInstancia().getAdaptadorInterfazGrafica();
         adaptadorInterfazGrafica.escribeEnPantallaEspecOfertaList(ofertasVendidas);
+        EntradaDatosPorConsola.lectura("Pulse una tecla para continuar...");
+        adaptadorInterfazGrafica.salidaPorPantallaLn("");
     }
     private static void darseDeBaja () {
         final  IAdaptadorInterfazGrafica adaptadorInterfazGrafica = FactoriaInterfazGrafica.getInstancia().getAdaptadorInterfazGrafica();
         try {
             final CatalogoOfertas ctlgoOfer = new CatalogoOfertas (especUsuario.getUserId());
-            final ManejadorDarseDeBaja mndor = new ManejadorDarseDeBaja (ctlgoOfer, especUsuario);
+            final ManejadorDarseDeBaja mndor = new ManejadorDarseDeBaja (ctlgoOfer);
             mndor.darseDeBaja (especUsuario);
             especUsuario = null;
+            adaptadorInterfazGrafica.salidaPorPantallaLn("El usuario se ha dado de baja en el sistema.");
+            EntradaDatosPorConsola.lectura("Pulse una tecla para continuar...");
+            adaptadorInterfazGrafica.salidaPorPantallaLn("");
         } catch (NotBoundException e) {
             adaptadorInterfazGrafica.salidaPorPantallaLn ("Ha habido una excepción en la búsqueda del servicio de mercancías. Detalles: " + e.getMessage());
             e.printStackTrace ();
@@ -165,7 +167,7 @@ public class Distribuidor implements ServicioVenta {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main (String[] args) {
         final Menu menuPrincipal = new Menu (TipoOpcionMenu.DIGITOS, numOpsMenuPrincipal, opcionesMenuPrincipal);
         final Menu menuScundario = new Menu (TipoOpcionMenu.DIGITOS, numOpsMenuSecundario, opcionesMenuSecundario);
 
@@ -193,9 +195,9 @@ public class Distribuidor implements ServicioVenta {
                                 if (idAutenticacion > 0) {
                                     // Si me autentico correctamente idAutenticacion > 0
                                     // Pongo en marcha el servicio de Venta
-                                    System.out.println("El valor del servicio es: " + NOMBRE_SERVICIO_VENTAS + idAutenticacion);
-                                    ServicioVenta servicioVentasStub = (ServicioVenta) UnicastRemoteObject.exportObject(distribuidor, 0);
-                                    registry.rebind(NOMBRE_SERVICIO_VENTAS + idAutenticacion, servicioVentasStub);
+                                    System.out.println("El valor del servicio es: " + NOMBRE_SERVICIO_COMPRA + idAutenticacion);
+                                    ServicioCompraInterface servicioVentasStub = (ServicioCompraInterface) UnicastRemoteObject.exportObject(distribuidor, 0);
+                                    registry.rebind(NOMBRE_SERVICIO_COMPRA + idAutenticacion, servicioVentasStub);
                                     registry.list();
                                 }
                             } else {
@@ -210,9 +212,9 @@ public class Distribuidor implements ServicioVenta {
                                     // Si me autentico correctamente idAutenticacion > 0
                                     System.out.println("El id de usuario es: " + idAutenticacion);
                                     // Pongo en marcha el servicio de Venta
-                                    System.out.println("El valor del servicio es: " + NOMBRE_SERVICIO_VENTAS + idAutenticacion);
-                                    ServicioVenta servicioVentasStub = (ServicioVenta) UnicastRemoteObject.exportObject(distribuidor, 0);
-                                    registry.rebind(NOMBRE_SERVICIO_VENTAS + idAutenticacion, servicioVentasStub);
+                                    System.out.println("El valor del servicio es: " + NOMBRE_SERVICIO_COMPRA + idAutenticacion);
+                                    ServicioCompraInterface servicioVentasStub = (ServicioCompraInterface) UnicastRemoteObject.exportObject(distribuidor, 0);
+                                    registry.rebind(NOMBRE_SERVICIO_COMPRA + idAutenticacion, servicioVentasStub);
                                     registry.list();
                                 }
                             } else {
@@ -261,9 +263,9 @@ public class Distribuidor implements ServicioVenta {
                 // Desregistro el servicio de ventas
                 System.out.println("Desregistro el servicio de venta.");
                 System.out.println("El valor del idAutenticacion es: " + idAutenticacion);
-                System.out.println("El valor del servicio es: " + NOMBRE_SERVICIO_VENTAS + idAutenticacion);
+                System.out.println("El valor del servicio es: " + NOMBRE_SERVICIO_COMPRA + idAutenticacion);
                 registry.list();
-                registry.unbind(NOMBRE_SERVICIO_VENTAS + idAutenticacion);
+                registry.unbind(NOMBRE_SERVICIO_COMPRA + idAutenticacion);
                 UnicastRemoteObject.unexportObject(distribuidor, true);
                 registry.list();
                 adaptadorInterfazGrafica.salidaPorPantallaLn("Bajado el Servicio de Ventas ...");

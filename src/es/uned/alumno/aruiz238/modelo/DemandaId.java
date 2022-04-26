@@ -1,8 +1,15 @@
+/*
+ ////////////////////////////////////////
+  Autor: Ángel Ruiz Cantón
+  E-mail: aruiz238@alumno.uned.es
+ ////////////////////////////////////////
+*/
 package es.uned.alumno.aruiz238.modelo;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class DemandaId {
+public class DemandaId implements Serializable {
     private final int demadaId;
     private final int hashCode;
 

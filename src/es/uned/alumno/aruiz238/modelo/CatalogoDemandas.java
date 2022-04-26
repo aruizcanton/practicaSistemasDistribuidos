@@ -1,3 +1,9 @@
+/*
+ ////////////////////////////////////////
+  Autor: Ángel Ruiz Cantón
+  E-mail: aruiz238@alumno.uned.es
+ ////////////////////////////////////////
+*/
 package es.uned.alumno.aruiz238.modelo;
 
 import es.uned.alumno.aruiz238.interfaz.FactoriaDeServicios;
@@ -22,7 +28,13 @@ public class CatalogoDemandas {
         servMercancias = FactoriaDeServicios.getInstancia().getAdaptadorServMercancias();
         especsDeman = servMercancias.getDemandas(usuarioId);
     }
-    private final Comparator<EspecDemanda> especDemandaComparator = Comparator.comparingInt(o -> o.getDemandaId().getDemadaId());
+    private Comparator<EspecDemanda> especDemandaComparator = new Comparator<>() {
+        @Override
+        public int compare(EspecDemanda o1, EspecDemanda o2) {
+            return o1.getDemandaId().getDemadaId() - o2.getDemandaId().getDemadaId();
+        }
+    };
+
     public EspecDemanda agregaNewDeman (EspecDemanda especDemanda) throws NotBoundException, RemoteException {
         final EspecDemanda especDemanda1 = servMercancias.anyadirDemanda (especDemanda);
         especsDeman.put(especDemanda1.getDemandaId(), especDemanda1);
@@ -30,7 +42,7 @@ public class CatalogoDemandas {
     }
     public List<EspecDemanda> getDemandas () {
         final List<EspecDemanda> especDemandas = new ArrayList<>(especsDeman.values());
-        especDemandas.sort(especDemandaComparator);
+        especDemandas.sort (especDemandaComparator);
         return especDemandas;
     }
     public void removeDeman (DemandaId demandaId) throws NotBoundException, RemoteException {

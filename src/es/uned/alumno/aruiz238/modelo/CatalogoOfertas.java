@@ -24,27 +24,37 @@ public class CatalogoOfertas {
         servMercancias = FactoriaDeServicios.getInstancia().getAdaptadorServMercancias();
         especsOfer = servMercancias.getOfertas();
     }
-    public CatalogoOfertas(UsuarioId usuarioId) throws NotBoundException, RemoteException {
+
+    public CatalogoOfertas (UsuarioId usuarioId) throws NotBoundException, RemoteException {
         servMercancias = FactoriaDeServicios.getInstancia().getAdaptadorServMercancias();
         especsOfer = servMercancias.getOfertas(usuarioId);
     }
+
+    public CatalogoOfertas (MercanciaId mercanciaId) throws NotBoundException, RemoteException {
+        servMercancias = FactoriaDeServicios.getInstancia().getAdaptadorServMercancias();
+        especsOfer = servMercancias.getOfertas(mercanciaId);
+    }
+
     private final Comparator<EspecOferta> especOfertaComparator = new Comparator<>() {
         @Override
         public int compare(EspecOferta o1, EspecOferta o2) {
             return o1.getOfertaId().getOfertaId() - o2.getOfertaId().getOfertaId();
         }
     };
-    public EspecOferta agregaNewOfer(EspecOferta especOferta) throws NotBoundException, RemoteException {
+
+    public EspecOferta agregaNewOfer (EspecOferta especOferta) throws NotBoundException, RemoteException {
         final EspecOferta especOferta1 = servMercancias.anyadirOferta(especOferta);
         especsOfer.put(especOferta1.getOfertaId(), especOferta1);
         return especOferta1;
     }
+
     public List<EspecOferta> getOfertas() {
 
         final List<EspecOferta> especOfertas = new ArrayList<>(especsOfer.values());
         especOfertas.sort(especOfertaComparator);
         return especOfertas;
     }
+
     public void removeOfer(OfertaId ofertaId) throws NotBoundException, RemoteException {
         servMercancias.removeOferta(ofertaId);
         especsOfer.remove(ofertaId);
@@ -58,4 +68,5 @@ public class CatalogoOfertas {
         }
         especsOfer.clear();
     }
+
 }

@@ -8,10 +8,9 @@ import java.rmi.RemoteException;
 
 public class ManejadorDarseDeBaja {
     private final CatalogoOfertas ctlgoOfer;
-    private final EspecUsuario especUsuario;
-    public ManejadorDarseDeBaja (CatalogoOfertas ctlgoOfer, EspecUsuario especUsuario) {
+
+    public ManejadorDarseDeBaja (CatalogoOfertas ctlgoOfer) {
         this.ctlgoOfer = ctlgoOfer;
-        this.especUsuario = especUsuario;
     }
     public void darseDeBaja (EspecUsuario especUsuario) throws NotBoundException, RemoteException {
         ctlgoOfer.darDeBajaCatalogo();

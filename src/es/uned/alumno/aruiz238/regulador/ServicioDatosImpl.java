@@ -24,8 +24,10 @@ public class ServicioDatosImpl implements ServicioDatosInterface {
         put(new MercanciaId(6), new EspecMercancia(new MercanciaId(6), "Melones"));
         put(new MercanciaId(7), new EspecMercancia(new MercanciaId(7), "Sandías"));
      }};
+     private static final ConcurrentHashMap<DemandaId, EspecDemanda> demandas = new ConcurrentHashMap<>();
      private static int userId=0;
-     private static int ofertasId=0;
+     private static int ofertaId =0;
+     private static int demandaId=0;
 
      //
      // MÉTODOS PARA GESTIONAR USUARIOS
@@ -49,6 +51,9 @@ public class ServicioDatosImpl implements ServicioDatosInterface {
         usuarios.remove(especUsuario.getUserName());
     }
 
+    public ConcurrentHashMap<String, EspecUsuario> getUsuarios() {
+        return usuarios;
+    }
     //
     //METODOS PARA GESTIONAR MERCANCIAS
     //
@@ -63,27 +68,50 @@ public class ServicioDatosImpl implements ServicioDatosInterface {
     //
     @Override
     public EspecOferta anyadirOfertaBDD (EspecOferta especOferta) throws RemoteException {
-        ofertasId = ofertasId + 1;
-        final OfertaId oId = new OfertaId (ofertasId);
-        final EspecOferta especOferta1 = new EspecOferta (oId,especOferta.getEspecMercancia(), especOferta.getPrecio(), especOferta.getKilos(), especOferta.getUsuarioId());
+        ofertaId = ofertaId + 1;
+        final OfertaId oId = new OfertaId (ofertaId);
+        final EspecOferta especOferta1 = new EspecOferta (oId, especOferta.getEspecMercancia(), especOferta.getPrecio(), especOferta.getKilos(), especOferta.getUsuarioId());
         ofertas.put(oId, especOferta1);
         return especOferta1;
     }
+
+    @Override
     public void removeOfertaBDD (OfertaId ofertaId) throws RemoteException {
         ofertas.remove(ofertaId);
     }
+
+    @Override
     public ConcurrentHashMap<OfertaId, EspecOferta> getOfertasBDD () {return ofertas; }
 
-    public ConcurrentHashMap<OfertaId, EspecOferta> getOfertasBDD (UsuarioId usuarioId) {
-        final ConcurrentHashMap <OfertaId, EspecOferta> ofertasTmp = new ConcurrentHashMap<>();
+    @Override
+    public EspecDemanda anyadirDemandaBDD (EspecDemanda especDemanda) throws RemoteException {
+        demandaId = demandaId +1;
+        final DemandaId dId = new DemandaId(demandaId);
+        final EspecDemanda especDemanda1 = new EspecDemanda(dId, especDemanda.getEspecMercancia(), especDemanda.getUsuarioId(), especDemanda.getDemandaListener());
+        demandas.put(dId, especDemanda1);
+        return especDemanda1;
+    }
 
-        for (EspecOferta value:
-                ofertas.values()
-             ) {
-                    if (value.getUsuarioId().equals(usuarioId)) {
-                        ofertasTmp.put(value.getOfertaId(), value);
-                    }
+    @Override
+    public void removeDemandaBDD(DemandaId demandaId) throws RemoteException {
+        demandas.remove(demandaId);
+    }
+
+    @Override
+    public ConcurrentHashMap<DemandaId, EspecDemanda> getDemandasBDD() throws RemoteException {
+        return demandas;
+    }
+
+    @Override
+    public ConcurrentHashMap<DemandaId, EspecDemanda> getDemandasBDD(UsuarioId usuarioId) throws RemoteException {
+        final ConcurrentHashMap<DemandaId, EspecDemanda> demandasTmp = new ConcurrentHashMap<>();
+        for (EspecDemanda value:
+                demandas.values()
+        ) {
+            if (value.getUsuarioId().equals(usuarioId)) {
+                demandasTmp.put(value.getDemandaId(), value);
+            }
         }
-        return ofertasTmp;
+        return demandasTmp;
     }
 }
